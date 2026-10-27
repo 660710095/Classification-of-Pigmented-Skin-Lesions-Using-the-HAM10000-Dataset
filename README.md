@@ -1,0 +1,2 @@
+# Classification-of-Pigmented-Skin-Lesions-Using-the-HAM10000-Dataset
+This project develops deep learning models to classify seven types of pigmented skin lesions from dermatoscopic images in the HAM10000 dataset (10,015 images). We compare a custom CNN against three transfer learning models (ResNet50, DenseNet121, EfficientNet-B0), address severe class imbalance, and use Grad-CAM to interpret model predictions.
