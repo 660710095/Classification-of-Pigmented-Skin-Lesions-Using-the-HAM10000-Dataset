@@ -99,12 +99,103 @@
 
 ---
 
-## 4. ข้อควรรู้เกี่ยวกับชุดข้อมูล
+## 4. โครงสร้างโฟลเดอร์ (Root)
+
+### 4.1 Root ของโฟลเดอร์ข้อมูล (`data/`) หลังดาวน์โหลดจาก Kaggle
+
+```
+data/
+├── HAM10000_images_part_1/      # รูป JPG ส่วนที่ 1
+├── HAM10000_images_part_2/      # รูป JPG ส่วนที่ 2
+├── HAM10000_metadata.csv        # metadata ของทุกรูป (ไฟล์หลักที่ต้องใช้)
+├── hmnist_28_28_RGB.csv         # (ไม่บังคับ) รูปย่อ 28x28 สี
+├── hmnist_28_28_L.csv           # (ไม่บังคับ) รูปย่อ 28x28 ขาวดำ
+├── hmnist_8_8_RGB.csv           # (ไม่บังคับ) รูปย่อ 8x8 สี
+└── hmnist_8_8_L.csv             # (ไม่บังคับ) รูปย่อ 8x8 ขาวดำ
+```
+
+| ต้องมี | ไฟล์/โฟลเดอร์ |
+|---|---|
+| **จำเป็น** | `HAM10000_images_part_1/`, `HAM10000_images_part_2/`, `HAM10000_metadata.csv` |
+| ไม่จำเป็นสำหรับโปรเจคหลัก | ไฟล์ `hmnist_*.csv` ทั้งหมด |
+
+หลังแตกไฟล์ ชื่อโฟลเดอร์หรือการซ้อนโฟลเดอร์อาจต่างจากข้างบนเล็กน้อย ให้เช็กด้วย `ls data/` แล้วปรับ path ใน `configs/config.yaml` ให้ตรง
+
+### 4.2 Root ของโปรเจค (Git repo)
+
+```
+skin-lesion-project/
+├── data/                    # ไม่ commit (อยู่ใน .gitignore) แต่ละคนโหลดเอง
+├── splits/
+│   └── splits.csv           # commit: image_id, lesion_id, dx, split
+├── scripts/
+│   └── make_splits.py       # สร้าง splits.csv ตาม lesion_id
+├── src/
+│   ├── augment.py           # train/val transforms (img_size ปรับได้)
+│   ├── dataset.py           # Dataset, class weights, cache
+│   ├── evaluate.py          # macro-F1, recall ของ mel, AUC, confusion matrix
+│   └── models/
+│       ├── __init__.py      # registry: get_model(name)
+│       └── <model_name>.py  # ไฟล์ของแต่ละโมเดล (คนละไฟล์ ลด conflict)
+├── configs/
+│   └── config.yaml          # img_size, batch_size, lr, epochs, seed, data_dir ฯลฯ
+├── checkpoints/             # ไม่ commit (*.pt)
+├── results/                 # metrics (JSON) และกราฟของแต่ละโมเดล
+├── notebooks/               # EDA และ Grad-CAM
+├── .gitignore               # data/, checkpoints/, __pycache__, *.pt
+├── requirements.txt
+└── README.md
+```
+
+| ต้อง commit | ไม่ commit |
+|---|---|
+| โค้ด, `splits.csv`, config, README, `results/` | `data/` (รูปภาพ), `checkpoints/`, `__pycache__/` |
+
+---
+
+## 5. ข้อควรรู้เกี่ยวกับชุดข้อมูล
 
 - **Test set ทางการไม่เปิดเผย:** ผู้สร้างระบุว่าผลงานตีพิมพ์ควรประเมินบน test set ของเซิร์ฟเวอร์ ISIC (https://challenge2018.isic-archive.com) การแบ่ง train/val/test เองจึงเทียบกับ leaderboard ทางการโดยตรงไม่ได้
 - **หนึ่งรอยโรคอาจมีหลายรูป:** แบ่งข้อมูลตาม `lesion_id` ไม่ใช่ตามรูป
 - **ความหลากหลายของประชากร:** ผู้ป่วยส่วนใหญ่มาจากออสเตรียและออสเตรเลีย
 - **ใช้เพื่อการศึกษา/วิจัยเท่านั้น** ไม่ใช่เครื่องมือวินิจฉัยจริง
+
+## 6. Workflow ของโปรเจค
+
+| สเต็ป | งาน | ผลลัพธ์ | ใครทำ |
+|---|---|---|---|
+| 1 | **ดาวน์โหลดข้อมูล** จาก Kaggle ลง `data/` ให้ได้โครงสร้างตามข้อ 4.1 | รูปและ metadata ครบ | ทุกคน |
+| 2 | **EDA**: จำนวนรูปต่อคลาส, ค่าว่าง, จำนวนรูปต่อ `lesion_id`, อายุ/เพศ/ตำแหน่ง/`dx_type` แยกตามคลาส, ตัวอย่างรูปต่อคลาส | ตารางและกราฟ สรุปปัญหาของข้อมูล | ผู้รับผิดชอบ EDA |
+| 3 | **แบ่งข้อมูล 70/15/15 ตาม `lesion_id`** (seed 42, คงสัดส่วนคลาส) ตรวจรวม 10,015 รูปและไม่มี lesion_id ซ้ำข้าม split | `splits/splits.csv` (commit เข้า git) | ผู้รับผิดชอบ pipeline |
+| 4 | **เขียน pipeline กลาง**: `augment.py`, `dataset.py`, `config.yaml`, registry ของโมเดล แล้ว push เข้า main | repo ที่ทุกคน clone ได้ | ผู้รับผิดชอบ pipeline |
+| 5 | **Clone repo, ตั้งค่าเครื่อง, สร้าง branch** `model/<ชื่อโมเดล>` | เครื่องพร้อมเทรน | เพื่อนแต่ละคน |
+| 6 | **สร้างโมเดลของตัวเอง** ใน `src/models/<ชื่อโมเดล>.py` แล้วลองรัน 1 epoch กับข้อมูลย่อย | โค้ดโมเดลที่รันผ่าน | เพื่อนแต่ละคน |
+| 7 | **เทรนทุกโมเดลด้วยเงื่อนไขเดียวกัน** (img_size 224, batch size และ seed เดียวกัน, class weight, early stopping ตาม val macro-F1) | checkpoint ใน `checkpoints/` | เพื่อนแต่ละคน |
+| 8 | **ประเมินบน test set ครั้งเดียว**: accuracy, macro-F1, recall ของ melanoma, AUC, confusion matrix | `results/<model>_<size>.json` และกราฟ | เพื่อนแต่ละคน |
+| 9 | **Ablation** (เสริม): ไม่ใช้ augmentation / เรขาคณิตอย่างเดียว / เต็มชุด | ตารางเทียบผลของ augmentation | ตามตกลง |
+| 10 | **Grad-CAM** กับโมเดลที่ดีที่สุด | ภาพอธิบายว่าโมเดลมองตรงรอยโรคหรือไม่ | ตามตกลง |
+| 11 | **รวมผลและเขียนรายงาน**: ตารางเปรียบเทียบทุกโมเดล วิเคราะห์ imbalance ข้อจำกัด | รายงานและสไลด์ | ทั้งทีม |
+
+### แผนภาพลำดับงาน
+
+```
+ดาวน์โหลดข้อมูล -> EDA -> สร้าง splits.csv -> pipeline กลาง (push main)
+                                                   |
+                         clone + branch ต่อโมเดล <-+
+                                   |
+              เทรน (เงื่อนไขเดียวกัน) -> ประเมินบน test -> Grad-CAM -> รายงาน
+```
+
+### กฎที่ต้องไม่ลืม
+
+1. **แบ่งข้อมูลก่อน แล้วค่อย augment** เฉพาะชุด train และ augment แบบ on-the-fly ไม่สร้างไฟล์รูปเพิ่ม
+2. **ห้ามแก้ `splits.csv`, `augment.py`, `dataset.py` ในแต่ละ branch** ถ้าต้องแก้ ให้แจ้งทีมและแก้ใน main ที่เดียว
+3. **ห้ามใช้ test set** ในการเทรน ทำ early stopping หรือปรับ hyperparameter
+4. **เงื่อนไขเทรนเดียวกันทุกโมเดล** เพื่อให้เปรียบเทียบได้ยุติธรรม ขนาดรูปอื่นให้แยกเป็นการทดลองเพิ่มเติมและเขียนกำกับ
+5. **ห้าม commit รูปภาพและ checkpoint** เข้า git
+6. **ใช้ GPU ร่วมกัน (VRAM 24 GB)** ควรตกลงเวลาเทรนไม่ให้ซ้อนกัน
+
+---
 
 ## อ้างอิง
 
