@@ -1,0 +1,27 @@
+# Data directories
+data/
+*.zip
+*.tar.gz
+
+# Checkpoints and models
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+env/
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store

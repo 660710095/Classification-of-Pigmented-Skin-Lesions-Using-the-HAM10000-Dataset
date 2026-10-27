@@ -1,0 +1,39 @@
+# Pipeline configuration for HAM10000 Skin Lesion Classification
+
+# Image resolutions
+img_size: 224
+
+# Per-model image resolution overrides (optional)
+# Model builder / dataset can check model_img_size.get(model_name, img_size)
+model_img_size:
+  resnet50: 224
+  convnext_tiny: 224
+  efficientnet_b0: 224
+  efficientnet_b4: 380
+  swin_tiny: 224
+
+# Training hyperparameters
+batch_size: 64
+lr: 0.0001
+weight_decay: 0.0001
+epochs: 30
+
+# Reproducibility
+seed: 42
+
+# DataLoader performance (optimized for RTX 6000 / Linux)
+num_workers: 4
+pin_memory: true
+persistent_workers: true
+
+# Dataset configuration
+# Relative path to keep repository portable across teammates' environments
+data_dir: "data"
+splits_file: "splits/splits.csv"
+
+# In-RAM caching of pre-resized uint8 tensors for faster training epochs
+cache_in_ram: false
+
+# Mixed precision acceleration (bfloat16 for RTX 6000 Ada/Blackwell)
+use_amp: true
+amp_dtype: "bfloat16"
