@@ -124,27 +124,36 @@ data/
 ### 4.2 Root ของโปรเจค (Git repo)
 
 ```
-skin-lesion-project/
-├── data/                    # ไม่ commit (อยู่ใน .gitignore) แต่ละคนโหลดเอง
-├── splits/
-│   └── splits.csv           # commit: image_id, lesion_id, dx, split
-├── scripts/
-│   └── make_splits.py       # สร้าง splits.csv ตาม lesion_id
-├── src/
-│   ├── augment.py           # train/val transforms (img_size ปรับได้)
-│   ├── dataset.py           # Dataset, class weights, cache
-│   ├── evaluate.py          # macro-F1, recall ของ mel, AUC, confusion matrix
-│   └── models/
-│       ├── __init__.py      # registry: get_model(name)
-│       └── <model_name>.py  # ไฟล์ของแต่ละโมเดล (คนละไฟล์ ลด conflict)
+term_Project/                              <-- [ROOT FOLDER]
+├── .gitignore                             <-- ตั้งค่าไม่ให้อัปโหลด data/ และ checkpoints/
+├── requirements.txt                       <-- รายชื่อไลบรารีที่ต้องติดตั้ง
+├── README.md                              <-- คู่มือโปรเจกต์ฉบับเต็ม
+├── HAM10000_Dataset_Description.md        <-- รายละเอียดข้อมูลโรคผิวหนังฉบับไทย
+│
 ├── configs/
-│   └── config.yaml          # img_size, batch_size, lr, epochs, seed, data_dir ฯลฯ
-├── checkpoints/             # ไม่ commit (*.pt)
-├── results/                 # metrics (JSON) และกราฟของแต่ละโมเดล
-├── notebooks/               # EDA และ Grad-CAM
-├── .gitignore               # data/, checkpoints/, __pycache__, *.pt
-├── requirements.txt
-└── README.md
+│   └── config.yaml                        <-- ตั้งค่าขนาดภาพ, Batch size, Learning rate, GPU
+│
+├── scripts/
+│   ├── download_data.py                   <-- สคริปต์โหลดดาต้าเซ็ตผ่าน kagglehub
+│   └── make_splits.py                     <-- สคริปต์คำนวณแบ่ง 70/15/15 กัน Data Leakage
+│
+├── splits/
+│   └── splits.csv                         <-- ตารางผลลัพธ์การแบ่งข้อมูล 10,015 ภาพ
+│
+├── src/                                   <-- โค้ดหลักของระบบ
+│   ├── __init__.py
+│   ├── augment.py                         <-- Data Augmentation ในแรม On-the-fly
+│   ├── dataset.py                         <-- คลาส PyTorch Dataset, แคชภาพในแรม, จัดการ Class Imbalance
+│   ├── utils.py                           <-- เช็กสเปก GPU RTX 6000, ล็อก Seed, เปิดใช้ bf16
+│   └── models/
+│       └── __init__.py                    <-- Registry รวมโมเดล (ให้เพื่อนแยกเขียนไฟล์ได้)
+│
+├── data/                                  <-- โฟลเดอร์เก็บรูปภาพ (อยู่ในเครื่อง / ไม่ขึ้น Git)
+│   ├── HAM10000_images_part_1/            <-- ภาพส่วนที่ 1 (5,000 ภาพ)
+│   ├── HAM10000_images_part_2/            <-- ภาพส่วนที่ 2 (5,015 ภาพ)
+│   └── HAM10000_metadata.csv              <-- ตารางข้อมูลโรค 10,015 แถว
+│
+└── checkpoints/                           <-- โฟลเดอร์เก็บไฟล์โมเดล
 ```
 
 | ต้อง commit | ไม่ commit |
