@@ -1,15 +1,15 @@
-=== CLASSIFICATION REPORT (HELD-OUT TEST SET) ===
+=== CLASSIFICATION REPORT (HELD-OUT TEST SET: EXP 2 3-DENSE HEAD) ===
 
               precision    recall  f1-score   support
 
-       akiec     0.3925    0.8571    0.5385        49
-         bcc     0.5536    0.7949    0.6526        78
-         bkl     0.6538    0.5152    0.5763       165
-          df     0.0391    0.7059    0.0741        17
-         mel     0.4087    0.5595    0.4724       168
-          nv     0.9724    0.5264    0.6830      1005
-        vasc     0.2603    0.9048    0.4043        21
+       akiec     0.6545    0.7347    0.6923        49
+         bcc     0.6739    0.7949    0.7294        78
+         bkl     0.7086    0.6485    0.6772       165
+          df     0.7647    0.7647    0.7647        17
+         mel     0.5595    0.5595    0.5595       168
+          nv     0.9190    0.9144    0.9167      1005
+        vasc     0.9000    0.8571    0.8780        21
 
-    accuracy                         0.5609      1503
-   macro avg     0.4686    0.6948    0.4859      1503
-weighted avg     0.8133    0.5609    0.6307      1503
+    accuracy                         0.8310      1503
+   macro avg     0.7400    0.7534    0.7454      1503
+weighted avg     0.8324    0.8310    0.8312      1503

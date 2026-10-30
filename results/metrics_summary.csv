@@ -1,11 +1,11 @@
 class_idx,class_code,class_name,precision,recall,f1_score,support
-0,akiec,Actinic keratoses (Pre-cancer),0.3925,0.8571,0.5385,49
-1,bcc,Basal cell carcinoma (Cancer),0.5536,0.7949,0.6526,78
-2,bkl,Benign keratosis (Benign),0.6538,0.5152,0.5763,165
-3,df,Dermatofibroma (Benign),0.0391,0.7059,0.0741,17
-4,mel,Melanoma (Severe Cancer),0.4087,0.5595,0.4724,168
-5,nv,Melanocytic nevi (Mole/Benign),0.9724,0.5264,0.683,1005
-6,vasc,Vascular lesion (Benign),0.2603,0.9048,0.4043,21
-,accuracy,Overall Accuracy,,,0.5609,1503
-,macro_avg,Macro Average,0.4686,0.6948,0.4859,1503
-,weighted_avg,Weighted Average,0.8133,0.5609,0.6307,1503
+0,akiec,Actinic keratoses (Pre-cancer),0.6545,0.7347,0.6923,49
+1,bcc,Basal cell carcinoma (Cancer),0.6739,0.7949,0.7294,78
+2,bkl,Benign keratosis (Benign),0.7086,0.6485,0.6772,165
+3,df,Dermatofibroma (Benign),0.7647,0.7647,0.7647,17
+4,mel,Melanoma (Severe Cancer),0.5595,0.5595,0.5595,168
+5,nv,Melanocytic nevi (Mole/Benign),0.919,0.9144,0.9167,1005
+6,vasc,Vascular lesion (Benign),0.9,0.8571,0.878,21
+,accuracy,Overall Accuracy,,,0.831,1503
+,macro_avg,Macro Average,0.74,0.7534,0.7454,1503
+,weighted_avg,Weighted Average,0.8324,0.831,0.8312,1503
