@@ -7,10 +7,9 @@ img_size: 224
 # Model builder / dataset can check model_img_size.get(model_name, img_size)
 model_img_size:
   resnet50: 224
-  convnext_tiny: 224
+  densenet121: 224
   efficientnet_b0: 224
   efficientnet_b4: 380
-  swin_tiny: 224
 
 # Training hyperparameters
 batch_size: 64
